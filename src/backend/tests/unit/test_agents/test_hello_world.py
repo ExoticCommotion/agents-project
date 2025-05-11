@@ -4,10 +4,11 @@ Tests for the hello_world.py module.
 This module contains tests for the hello world agent implementation.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from agents import Agent
+
 from backend.app.custom_agents.hello_world import (
     create_hello_world_agent,
     run_hello_world_agent,
