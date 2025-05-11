@@ -5,52 +5,60 @@ This module demonstrates a simple single agent pattern implementation
 using the OpenAI Agents SDK.
 """
 
-from openai import OpenAI
-from openai_agents import Agent, AgentState, Message, SingleAgentWorkflow  # type: ignore
+import asyncio
 
-client = OpenAI()
-
-
-class HelloWorldAgent(Agent):  # type: ignore
-    """A simple hello world agent that responds to user messages."""
-
-    def __init__(self) -> None:
-        """Initialize the HelloWorldAgent."""
-        super().__init__()
-
-    async def run(self, state: AgentState) -> AgentState:
-        """
-        Process the user's message and generate a response.
-
-        Args:
-            state: The current state of the agent conversation.
-
-        Returns:
-            The updated agent state with the agent's response.
-        """
-        latest_message = state.messages[-1]
-
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": latest_message.content},
-            ],
-        )
-
-        state.messages.append(
-            Message(role="assistant", content=response.choices[0].message.content)
-        )
-
-        return state
+from agents import Agent, Runner
 
 
-def create_hello_world_workflow() -> SingleAgentWorkflow:
+def create_hello_world_agent() -> Agent:
     """
-    Create a single agent workflow with the HelloWorldAgent.
+    Create a simple hello world agent that responds to user messages.
 
     Returns:
-        A configured SingleAgentWorkflow instance.
+        A configured Agent instance.
     """
-    agent = HelloWorldAgent()
-    return SingleAgentWorkflow(agent=agent)
+    return Agent(
+        name="HelloWorld",
+        instructions="You are a helpful assistant. You only respond in haikus.",
+    )
+
+
+async def run_hello_world_agent(user_input: str) -> str:
+    """
+    Run the hello world agent with the given user input.
+
+    Args:
+        user_input: The user's message.
+
+    Returns:
+        The agent's response.
+    """
+    agent = create_hello_world_agent()
+    result = await Runner.run(agent, input=user_input)
+    return str(result.final_output)
+
+
+def run_hello_world_sync(user_input: str) -> str:
+    """
+    Run the hello world agent synchronously with the given user input.
+
+    Args:
+        user_input: The user's message.
+
+    Returns:
+        The agent's response.
+    """
+    return str(Runner.run_sync(create_hello_world_agent(), input=user_input).final_output)
+
+
+async def main() -> None:  # pragma: no cover
+    """Run the hello world agent with a sample input."""
+    response = await run_hello_world_agent("Tell me about artificial intelligence.")
+    print(response)
+
+    sync_response = run_hello_world_sync("Tell me about Python.")
+    print(sync_response)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    asyncio.run(main())
