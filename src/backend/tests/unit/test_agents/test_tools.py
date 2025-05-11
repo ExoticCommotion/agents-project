@@ -4,10 +4,11 @@ Tests for the tools.py module.
 This module contains tests for the tool-using agent implementation.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from agents import Agent
+
 from backend.app.custom_agents.tools import (
     create_tool_using_agent,
     get_current_time,
