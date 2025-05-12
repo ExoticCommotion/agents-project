@@ -87,7 +87,7 @@ def format_task(
     except Exception as e:
         logger.error(f"Error formatting task: {str(e)}")
         print(f"[bold red]Error:[/] {str(e)}")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from e
 
 
 # ------------------------------------------------------------------ #

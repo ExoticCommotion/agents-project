@@ -1,10 +1,8 @@
 import asyncio
 import json
-import os
 import re
 import subprocess
 import sys
-from unittest.mock import patch
 
 import pytest
 
@@ -40,7 +38,7 @@ def extract_json_from_output(output: str) -> dict:
                 except json.JSONDecodeError:
                     continue
         
-        raise ValueError(f"Could not parse JSON from output: {output}")
+        raise ValueError(f"Could not parse JSON from output: {output}") from None
 
 
 async def test_greet_command() -> None:
@@ -117,7 +115,7 @@ async def test_format_task_compact_flag() -> None:
     logger.info("Pretty CLI output:\n%s", pretty_result.stdout)
     assert pretty_result.returncode == 0, "Pretty CLI did not exit cleanly"
     
-    pretty_output_json = extract_json_from_output(pretty_result.stdout)
+    extract_json_from_output(pretty_result.stdout)
     
     assert len(result.stdout) < len(pretty_result.stdout), \
         "Compact output should be shorter than pretty output"
