@@ -6,12 +6,11 @@ import json
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from agents.exceptions import APIError, APIStatusError, AgentError, RateLimitError
+from agents.exceptions import AgentsException
 
 from backend.app.custom_agents.task_formatter_agent import (
     ParsingError,
     TaskDefinition,
-    TaskFormatterError,
     TaskFormatterErrorType,
     TaskFormatterResponse,
     ValidationError,
@@ -173,10 +172,10 @@ def test_parse_json_response_with_missing_fields():
 @pytest.mark.asyncio
 async def test_error_handling_in_format_task(mock_runner):
     """Test error handling in format_task method."""
-    mock_runner.run.side_effect = APIError("API error")
+    mock_runner.run.side_effect = AgentsException("API error")
 
-    result = await format_task("Test task")
-    
+    result = await format_task("This is a valid task description with sufficient length.")
+
     assert isinstance(result, TaskFormatterResponse)
     assert result.success is False
     assert result.data is None
@@ -187,10 +186,10 @@ async def test_error_handling_in_format_task(mock_runner):
 
 def test_error_handling_in_format_task_sync(mock_runner):
     """Test error handling in format_task_sync method."""
-    mock_runner.run_sync.side_effect = APIError("API error")
+    mock_runner.run_sync.side_effect = AgentsException("API error")
 
-    result = format_task_sync("Test task")
-    
+    result = format_task_sync("This is a valid task description with sufficient length.")
+
     assert isinstance(result, TaskFormatterResponse)
     assert result.success is False
     assert result.data is None
@@ -202,10 +201,10 @@ def test_error_handling_in_format_task_sync(mock_runner):
 @pytest.mark.asyncio
 async def test_rate_limit_error_handling(mock_runner):
     """Test rate limit error handling in format_task method."""
-    mock_runner.run.side_effect = RateLimitError("Rate limit exceeded")
+    mock_runner.run.side_effect = AgentsException("Rate limit exceeded")
 
-    result = await format_task("Test task")
-    
+    result = await format_task("This is a valid task description with sufficient length.")
+
     assert isinstance(result, TaskFormatterResponse)
     assert result.success is False
     assert result.data is None
@@ -217,12 +216,11 @@ async def test_rate_limit_error_handling(mock_runner):
 @pytest.mark.asyncio
 async def test_authentication_error_handling(mock_runner):
     """Test authentication error handling in format_task method."""
-    error = APIStatusError("Authentication failed", response=MagicMock(status_code=401))
-    error.status_code = 401
+    error = AgentsException("Authentication failed: 401 Unauthorized")
     mock_runner.run.side_effect = error
 
-    result = await format_task("Test task")
-    
+    result = await format_task("This is a valid task description with sufficient length.")
+
     assert isinstance(result, TaskFormatterResponse)
     assert result.success is False
     assert result.data is None
@@ -265,7 +263,7 @@ def test_validate_task_description_too_short():
 def test_validate_task_description_too_long():
     """Test validation of too long task description."""
     long_description = "x" * 9000
-    
+
     with pytest.raises(ValidationError, match="Task description is too long"):
         validate_task_description(long_description)
 
@@ -278,20 +276,19 @@ def test_validate_task_description_valid():
 def test_task_formatter_response_model():
     """Test the TaskFormatterResponse model."""
     success_response = TaskFormatterResponse(
-        success=True,
-        data={"title": "Test Task", "goal": "Test Goal"}
+        success=True, data={"title": "Test Task", "goal": "Test Goal"}
     )
     assert success_response.success is True
     assert success_response.data == {"title": "Test Task", "goal": "Test Goal"}
     assert success_response.error is None
-    
+
     error_response = TaskFormatterResponse(
         success=False,
         error={
             "type": TaskFormatterErrorType.VALIDATION_ERROR,
             "message": "Validation failed",
-            "details": {"field": "task_description"}
-        }
+            "details": {"field": "task_description"},
+        },
     )
     assert error_response.success is False
     assert error_response.data is None

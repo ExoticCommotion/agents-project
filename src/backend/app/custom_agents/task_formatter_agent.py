@@ -7,10 +7,10 @@ into structured JSON task definitions using the OpenAI Agents SDK.
 
 import json
 from enum import Enum
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from agents import Agent, Runner
-from agents.exceptions import AgentError, APIError, APIStatusError, RateLimitError
+from agents.exceptions import AgentsException
 from pydantic import BaseModel, Field
 
 from backend.app.utils.logger import get_logger
@@ -37,7 +37,7 @@ class TaskFormatterError(Exception):
         self,
         message: str,
         error_type: TaskFormatterErrorType = TaskFormatterErrorType.UNKNOWN_ERROR,
-        details: Optional[Dict[str, Any]] = None,
+        details: dict[str, Any] | None = None,
     ):
         self.message = message
         self.error_type = error_type
@@ -48,7 +48,7 @@ class TaskFormatterError(Exception):
 class ValidationError(TaskFormatterError):
     """Exception raised for input validation errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
         super().__init__(
             message, error_type=TaskFormatterErrorType.VALIDATION_ERROR, details=details
         )
@@ -57,22 +57,18 @@ class ValidationError(TaskFormatterError):
 class ParsingError(TaskFormatterError):
     """Exception raised for JSON parsing errors."""
 
-    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
-        super().__init__(
-            message, error_type=TaskFormatterErrorType.PARSING_ERROR, details=details
-        )
+    def __init__(self, message: str, details: dict[str, Any] | None = None):
+        super().__init__(message, error_type=TaskFormatterErrorType.PARSING_ERROR, details=details)
 
 
 class TaskFormatterResponse(BaseModel):
     """Response model for task formatter operations."""
 
     success: bool = Field(description="Whether the operation was successful")
-    data: Optional[Dict[str, Any]] = Field(
+    data: dict[str, Any] | None = Field(
         default=None, description="The formatted task data if successful"
     )
-    error: Optional[Dict[str, Any]] = Field(
-        default=None, description="Error details if unsuccessful"
-    )
+    error: dict[str, Any] | None = Field(default=None, description="Error details if unsuccessful")
 
 
 class TaskDefinition(BaseModel):
@@ -190,43 +186,35 @@ async def format_task(task_description: str) -> TaskFormatterResponse:
                 "details": e.details,
             },
         )
-    except RateLimitError as e:
-        logger.error(f"Rate limit error: {str(e)}")
-        return TaskFormatterResponse(
-            success=False,
-            error={
-                "type": TaskFormatterErrorType.RATE_LIMIT_ERROR,
-                "message": f"OpenAI API rate limit exceeded: {str(e)}",
-                "details": {"original_error": str(e)},
-            },
-        )
-    except APIStatusError as e:
+    except AgentsException as e:
         error_type = TaskFormatterErrorType.API_ERROR
-        if e.status_code == 401:
+        error_message = f"OpenAI API error: {str(e)}"
+        error_details = {"original_error": str(e)}
+
+        error_msg = str(e).lower()
+        if "rate limit" in error_msg or "too many requests" in error_msg:
+            error_type = TaskFormatterErrorType.RATE_LIMIT_ERROR
+            error_message = f"OpenAI API rate limit exceeded: {str(e)}"
+            logger.error(f"Rate limit error: {str(e)}")
+        elif "unauthorized" in error_msg or "authentication" in error_msg or "401" in error_msg:
             error_type = TaskFormatterErrorType.AUTHENTICATION_ERROR
             logger.error(f"Authentication error: {str(e)}")
-        elif e.status_code >= 500:
+        elif "server error" in error_msg or "500" in error_msg:
             error_type = TaskFormatterErrorType.SERVER_ERROR
             logger.error(f"Server error: {str(e)}")
         else:
             logger.error(f"API error: {str(e)}")
 
+        status_code = getattr(e, "status_code", None)
+        if status_code is not None:
+            error_details["status_code"] = status_code
+
         return TaskFormatterResponse(
             success=False,
             error={
                 "type": error_type,
-                "message": f"OpenAI API error: {str(e)}",
-                "details": {"status_code": e.status_code, "original_error": str(e)},
-            },
-        )
-    except (APIError, AgentError) as e:
-        logger.error(f"API error: {str(e)}")
-        return TaskFormatterResponse(
-            success=False,
-            error={
-                "type": TaskFormatterErrorType.API_ERROR,
-                "message": f"OpenAI API error: {str(e)}",
-                "details": {"original_error": str(e)},
+                "message": error_message,
+                "details": error_details,
             },
         )
     except Exception as e:
@@ -286,43 +274,35 @@ def format_task_sync(task_description: str) -> TaskFormatterResponse:
                 "details": e.details,
             },
         )
-    except RateLimitError as e:
-        logger.error(f"Rate limit error: {str(e)}")
-        return TaskFormatterResponse(
-            success=False,
-            error={
-                "type": TaskFormatterErrorType.RATE_LIMIT_ERROR,
-                "message": f"OpenAI API rate limit exceeded: {str(e)}",
-                "details": {"original_error": str(e)},
-            },
-        )
-    except APIStatusError as e:
+    except AgentsException as e:
         error_type = TaskFormatterErrorType.API_ERROR
-        if e.status_code == 401:
+        error_message = f"OpenAI API error: {str(e)}"
+        error_details = {"original_error": str(e)}
+
+        error_msg = str(e).lower()
+        if "rate limit" in error_msg or "too many requests" in error_msg:
+            error_type = TaskFormatterErrorType.RATE_LIMIT_ERROR
+            error_message = f"OpenAI API rate limit exceeded: {str(e)}"
+            logger.error(f"Rate limit error: {str(e)}")
+        elif "unauthorized" in error_msg or "authentication" in error_msg or "401" in error_msg:
             error_type = TaskFormatterErrorType.AUTHENTICATION_ERROR
             logger.error(f"Authentication error: {str(e)}")
-        elif e.status_code >= 500:
+        elif "server error" in error_msg or "500" in error_msg:
             error_type = TaskFormatterErrorType.SERVER_ERROR
             logger.error(f"Server error: {str(e)}")
         else:
             logger.error(f"API error: {str(e)}")
 
+        status_code = getattr(e, "status_code", None)
+        if status_code is not None:
+            error_details["status_code"] = status_code
+
         return TaskFormatterResponse(
             success=False,
             error={
                 "type": error_type,
-                "message": f"OpenAI API error: {str(e)}",
-                "details": {"status_code": e.status_code, "original_error": str(e)},
-            },
-        )
-    except (APIError, AgentError) as e:
-        logger.error(f"API error: {str(e)}")
-        return TaskFormatterResponse(
-            success=False,
-            error={
-                "type": TaskFormatterErrorType.API_ERROR,
-                "message": f"OpenAI API error: {str(e)}",
-                "details": {"original_error": str(e)},
+                "message": error_message,
+                "details": error_details,
             },
         )
     except Exception as e:
@@ -365,21 +345,23 @@ def _parse_json_response(response: str) -> dict[str, Any]:
 
         if not cleaned_response:
             logger.error("Empty JSON content after cleaning")
-            raise ParsingError("Empty JSON content after cleaning", details={"original_response": response})
+            raise ParsingError(
+                "Empty JSON content after cleaning", details={"original_response": response}
+            )
 
         task_json: dict[str, Any] = json.loads(cleaned_response)
-        
+
         # Validate that the required fields are present
         required_fields = ["title", "goal", "input", "output", "verify", "notes"]
         missing_fields = [field for field in required_fields if field not in task_json]
-        
+
         if missing_fields:
             logger.error(f"Missing required fields in JSON response: {missing_fields}")
             raise ParsingError(
                 f"Missing required fields in JSON response: {', '.join(missing_fields)}",
                 details={"missing_fields": missing_fields, "parsed_json": task_json},
             )
-            
+
         logger.debug("Successfully parsed JSON response")
         return task_json
     except json.JSONDecodeError as e:

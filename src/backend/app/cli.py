@@ -70,12 +70,12 @@ def format_task(
     uv run python -m backend.app.cli format-task "Fix bug in login form" --compact
     """
     logger.info("Processing task description...")
-    
+
     if not task_description or task_description.strip() == "":
         logger.error("Error: Task description cannot be empty")
         print("[bold red]Error:[/] Task description cannot be empty")
         raise typer.Exit(code=1)
-    
+
     try:
         if os.environ.get("DTFA_TEST_MODE") == "1":
             logger.info("Running in test mode with mock data")
@@ -85,17 +85,32 @@ def format_task(
                 "input": "Test input",
                 "output": "Test output",
                 "verify": ["Test verification"],
-                "notes": ["Test note"]
+                "notes": ["Test note"],
             }
         else:
-            task_json = format_task_sync(task_description)
-        
+            response = format_task_sync(task_description)
+
+            if not response.success:
+                error_msg = "Unknown error occurred"
+                if response.error is not None:
+                    error_msg = response.error.get("message", "Unknown error occurred")
+                logger.error(f"Error formatting task: {error_msg}")
+                print(f"[bold red]Error:[/] {error_msg}")
+                raise typer.Exit(code=1)
+
+            if response.data is None:
+                logger.error("Error: No data returned from task formatter")
+                print("[bold red]Error:[/] No data returned from task formatter")
+                raise typer.Exit(code=1)
+
+            task_json = response.data
+
         indent = 2 if pretty else None
         formatted_json = json.dumps(task_json, indent=indent)
-        
+
         print(formatted_json)
         logger.info("Task formatting completed successfully")
-        
+
     except Exception as e:
         logger.error(f"Error formatting task: {str(e)}")
         print(f"[bold red]Error:[/] {str(e)}")
