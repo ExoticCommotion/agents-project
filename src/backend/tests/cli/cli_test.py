@@ -18,27 +18,27 @@ ENTRYPOINT = "src/backend/app/cli.py"
 
 def extract_json_from_output(output: str) -> dict:
     """Extract JSON from CLI output that may contain log messages."""
-    start = output.find('{')
-    end = output.rfind('}')
-    
+    start = output.find("{")
+    end = output.rfind("}")
+
     if start == -1 or end == -1 or start > end:
         raise ValueError(f"No JSON found in output: {output}")
-    
-    json_str = output[start:end+1]
-    
-    json_str = re.sub(r'[\x00-\x1F\x7F]', '', json_str)
-    
+
+    json_str = output[start : end + 1]
+
+    json_str = re.sub(r"[\x00-\x1F\x7F]", "", json_str)
+
     try:
         return json.loads(json_str)
     except json.JSONDecodeError:
-        for line in output.split('\n'):
+        for line in output.split("\n"):
             line = line.strip()
-            if line.startswith('{') and line.endswith('}'):
+            if line.startswith("{") and line.endswith("}"):
                 try:
                     return json.loads(line)
                 except json.JSONDecodeError:
                     continue
-        
+
         raise ValueError(f"Could not parse JSON from output: {output}") from None
 
 
@@ -63,7 +63,7 @@ async def test_greet_command() -> None:
 async def test_format_task_command() -> None:
     """Test the format-task command."""
     logger.info("=== Testing format-task command ===")
-    
+
     test_env = os.environ.copy()
     test_env["DTFA_TEST_MODE"] = "1"
 
@@ -76,7 +76,7 @@ async def test_format_task_command() -> None:
 
     logger.info("CLI output:\n%s", result.stdout)
     assert result.returncode == 0, "CLI did not exit cleanly"
-    
+
     output_json = extract_json_from_output(result.stdout)
     assert "title" in output_json, "Title field missing"
     assert "goal" in output_json, "Goal field missing"
@@ -84,7 +84,7 @@ async def test_format_task_command() -> None:
     assert "output" in output_json, "Output field missing"
     assert "verify" in output_json, "Verify field missing"
     assert "notes" in output_json, "Notes field missing"
-    
+
     assert isinstance(output_json["title"], str), "Title should be a string"
     assert isinstance(output_json["goal"], str), "Goal should be a string"
     assert isinstance(output_json["verify"], list), "Verify should be a list"
@@ -97,7 +97,7 @@ async def test_format_task_command() -> None:
 async def test_format_task_compact_flag() -> None:
     """Test the format-task command with compact flag."""
     logger.info("=== Testing format-task command with compact flag ===")
-    
+
     test_env = os.environ.copy()
     test_env["DTFA_TEST_MODE"] = "1"
 
@@ -110,25 +110,26 @@ async def test_format_task_compact_flag() -> None:
 
     logger.info("CLI output:\n%s", result.stdout)
     assert result.returncode == 0, "CLI did not exit cleanly"
-    
+
     output_json = extract_json_from_output(result.stdout)
     assert "title" in output_json, "Title field missing"
     assert "goal" in output_json, "Goal field missing"
-    
+
     pretty_result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module", "--pretty"],
         capture_output=True,
         text=True,
         env=test_env,
     )
-    
+
     logger.info("Pretty CLI output:\n%s", pretty_result.stdout)
     assert pretty_result.returncode == 0, "Pretty CLI did not exit cleanly"
-    
+
     extract_json_from_output(pretty_result.stdout)
-    
-    assert len(result.stdout) < len(pretty_result.stdout), \
+
+    assert len(result.stdout) < len(pretty_result.stdout), (
         "Compact output should be shorter than pretty output"
+    )
 
     logger.info("✅ Format-task command with compact flag test passed.")
 
@@ -147,13 +148,14 @@ async def test_format_task_error_handling() -> None:
         text=True,
         env=test_env,
     )
-    
+
     logger.info(f"CLI stdout:\n{result.stdout}")
     logger.info(f"CLI stderr:\n{result.stderr}")
-    
+
     combined_output = result.stdout.lower() + result.stderr.lower()
-    assert "error" in combined_output or result.returncode != 0, \
+    assert "error" in combined_output or result.returncode != 0, (
         "CLI should display an error message or exit with non-zero code"
+    )
 
     logger.info("✅ Format-task command error handling test passed.")
 
