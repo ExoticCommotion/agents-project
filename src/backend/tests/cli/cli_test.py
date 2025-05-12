@@ -3,6 +3,7 @@ import json
 import re
 import subprocess
 import sys
+from unittest.mock import patch
 
 import pytest
 
@@ -59,9 +60,19 @@ async def test_greet_command() -> None:
 
 
 @pytest.mark.asyncio
-async def test_format_task_command() -> None:
+@patch("backend.app.custom_agents.task_formatter_agent.format_task_sync")
+async def test_format_task_command(mock_format_task_sync) -> None:
     """Test the format-task command."""
     logger.info("=== Testing format-task command ===")
+    
+    mock_format_task_sync.return_value = {
+        "title": "Test Module",
+        "goal": "Create a test module for testing",
+        "input": "Test input",
+        "output": "Test output",
+        "verify": ["Test verification"],
+        "notes": ["Test note"]
+    }
 
     result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module"],
@@ -89,9 +100,19 @@ async def test_format_task_command() -> None:
 
 
 @pytest.mark.asyncio
-async def test_format_task_compact_flag() -> None:
+@patch("backend.app.custom_agents.task_formatter_agent.format_task_sync")
+async def test_format_task_compact_flag(mock_format_task_sync) -> None:
     """Test the format-task command with compact flag."""
     logger.info("=== Testing format-task command with compact flag ===")
+    
+    mock_format_task_sync.return_value = {
+        "title": "Test Module",
+        "goal": "Create a test module for testing",
+        "input": "Test input",
+        "output": "Test output",
+        "verify": ["Test verification"],
+        "notes": ["Test note"]
+    }
 
     result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module", "--compact"],
@@ -105,6 +126,15 @@ async def test_format_task_compact_flag() -> None:
     output_json = extract_json_from_output(result.stdout)
     assert "title" in output_json, "Title field missing"
     assert "goal" in output_json, "Goal field missing"
+    
+    mock_format_task_sync.return_value = {
+        "title": "Test Module",
+        "goal": "Create a test module for testing",
+        "input": "Test input",
+        "output": "Test output",
+        "verify": ["Test verification"],
+        "notes": ["Test note"]
+    }
     
     pretty_result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module", "--pretty"],
