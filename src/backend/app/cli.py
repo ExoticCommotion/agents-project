@@ -11,6 +11,7 @@ Usage examples:
 from __future__ import annotations
 
 import json
+import os
 
 import typer
 from rich import print
@@ -76,7 +77,18 @@ def format_task(
         raise typer.Exit(code=1)
     
     try:
-        task_json = format_task_sync(task_description)
+        if os.environ.get("DTFA_TEST_MODE") == "1":
+            logger.info("Running in test mode with mock data")
+            task_json = {
+                "title": "Test Module",
+                "goal": "Create a test module for testing",
+                "input": "Test input",
+                "output": "Test output",
+                "verify": ["Test verification"],
+                "notes": ["Test note"]
+            }
+        else:
+            task_json = format_task_sync(task_description)
         
         indent = 2 if pretty else None
         formatted_json = json.dumps(task_json, indent=indent)

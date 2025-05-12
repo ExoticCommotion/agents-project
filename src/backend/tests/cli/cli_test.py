@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import re
 import subprocess
 import sys
@@ -60,24 +61,18 @@ async def test_greet_command() -> None:
 
 
 @pytest.mark.asyncio
-@patch("backend.app.custom_agents.task_formatter_agent.format_task_sync")
-async def test_format_task_command(mock_format_task_sync) -> None:
+async def test_format_task_command() -> None:
     """Test the format-task command."""
     logger.info("=== Testing format-task command ===")
     
-    mock_format_task_sync.return_value = {
-        "title": "Test Module",
-        "goal": "Create a test module for testing",
-        "input": "Test input",
-        "output": "Test output",
-        "verify": ["Test verification"],
-        "notes": ["Test note"]
-    }
+    test_env = os.environ.copy()
+    test_env["DTFA_TEST_MODE"] = "1"
 
     result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module"],
         capture_output=True,
         text=True,
+        env=test_env,
     )
 
     logger.info("CLI output:\n%s", result.stdout)
@@ -100,24 +95,18 @@ async def test_format_task_command(mock_format_task_sync) -> None:
 
 
 @pytest.mark.asyncio
-@patch("backend.app.custom_agents.task_formatter_agent.format_task_sync")
-async def test_format_task_compact_flag(mock_format_task_sync) -> None:
+async def test_format_task_compact_flag() -> None:
     """Test the format-task command with compact flag."""
     logger.info("=== Testing format-task command with compact flag ===")
     
-    mock_format_task_sync.return_value = {
-        "title": "Test Module",
-        "goal": "Create a test module for testing",
-        "input": "Test input",
-        "output": "Test output",
-        "verify": ["Test verification"],
-        "notes": ["Test note"]
-    }
+    test_env = os.environ.copy()
+    test_env["DTFA_TEST_MODE"] = "1"
 
     result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module", "--compact"],
         capture_output=True,
         text=True,
+        env=test_env,
     )
 
     logger.info("CLI output:\n%s", result.stdout)
@@ -127,19 +116,11 @@ async def test_format_task_compact_flag(mock_format_task_sync) -> None:
     assert "title" in output_json, "Title field missing"
     assert "goal" in output_json, "Goal field missing"
     
-    mock_format_task_sync.return_value = {
-        "title": "Test Module",
-        "goal": "Create a test module for testing",
-        "input": "Test input",
-        "output": "Test output",
-        "verify": ["Test verification"],
-        "notes": ["Test note"]
-    }
-    
     pretty_result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", "Create a test module", "--pretty"],
         capture_output=True,
         text=True,
+        env=test_env,
     )
     
     logger.info("Pretty CLI output:\n%s", pretty_result.stdout)
@@ -158,10 +139,14 @@ async def test_format_task_error_handling() -> None:
     """Test error handling in the format-task command."""
     logger.info("=== Testing format-task command error handling ===")
 
+    test_env = os.environ.copy()
+    test_env["DTFA_TEST_MODE"] = "1"
+
     result = subprocess.run(
         [sys.executable, ENTRYPOINT, "format-task", ""],
         capture_output=True,
         text=True,
+        env=test_env,
     )
     
     logger.info(f"CLI stdout:\n{result.stdout}")
