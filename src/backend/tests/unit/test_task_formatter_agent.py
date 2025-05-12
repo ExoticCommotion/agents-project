@@ -2,8 +2,8 @@
 Unit tests for the task_formatter_agent module.
 """
 
-from unittest.mock import AsyncMock, MagicMock, patch
 import json
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 

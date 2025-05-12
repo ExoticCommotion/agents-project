@@ -5,8 +5,8 @@ This module provides functionality to transform natural language task descriptio
 into structured JSON task definitions using the OpenAI Agents SDK.
 """
 
-from typing import Any
 import json
+from typing import Any
 
 from agents import Agent, Runner
 from pydantic import BaseModel, Field
