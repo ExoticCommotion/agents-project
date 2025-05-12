@@ -161,6 +161,14 @@ def test_parse_json_response_with_empty_response():
         _parse_json_response(response)
 
 
+def test_parse_json_response_with_empty_content_after_cleaning():
+    """Test parsing response that becomes empty after cleaning."""
+    response = "```json\n```"
+
+    with pytest.raises(ParsingError, match="Empty JSON content after cleaning"):
+        _parse_json_response(response)
+
+
 def test_parse_json_response_with_missing_fields():
     """Test parsing JSON response with missing required fields."""
     response = """{"title": "Test Task", "goal": "Implement a feature"}"""
@@ -184,6 +192,48 @@ async def test_error_handling_in_format_task(mock_runner):
     assert "API error" in result.error["message"]
 
 
+@pytest.mark.asyncio
+async def test_validation_error_handling_async(mock_runner):
+    """Test validation error handling in format_task method."""
+    with patch(
+        "backend.app.custom_agents.task_formatter_agent.validate_task_description"
+    ) as mock_validate:
+        mock_validate.side_effect = ValidationError(
+            "Validation failed", {"field": "task_description"}
+        )
+
+        result = await format_task("This is a valid task description with sufficient length.")
+
+        assert isinstance(result, TaskFormatterResponse)
+        assert result.success is False
+        assert result.data is None
+        assert result.error is not None
+        assert result.error["type"] == TaskFormatterErrorType.VALIDATION_ERROR
+        assert "Validation failed" in result.error["message"]
+        assert result.error["details"] == {"field": "task_description"}
+
+
+@pytest.mark.asyncio
+async def test_parsing_error_handling_async(mock_runner):
+    """Test parsing error handling in format_task method."""
+    mock_runner.run.return_value = MockRunnerResult("Invalid JSON")
+
+    with patch("backend.app.custom_agents.task_formatter_agent._parse_json_response") as mock_parse:
+        mock_parse.side_effect = ParsingError(
+            "Parsing failed", {"original_response": "Invalid JSON"}
+        )
+
+        result = await format_task("This is a valid task description with sufficient length.")
+
+        assert isinstance(result, TaskFormatterResponse)
+        assert result.success is False
+        assert result.data is None
+        assert result.error is not None
+        assert result.error["type"] == TaskFormatterErrorType.PARSING_ERROR
+        assert "Parsing failed" in result.error["message"]
+        assert result.error["details"] == {"original_response": "Invalid JSON"}
+
+
 def test_error_handling_in_format_task_sync(mock_runner):
     """Test error handling in format_task_sync method."""
     mock_runner.run_sync.side_effect = AgentsException("API error")
@@ -196,6 +246,46 @@ def test_error_handling_in_format_task_sync(mock_runner):
     assert result.error is not None
     assert result.error["type"] == TaskFormatterErrorType.API_ERROR
     assert "API error" in result.error["message"]
+
+
+def test_validation_error_handling_sync(mock_runner):
+    """Test validation error handling in format_task_sync method."""
+    with patch(
+        "backend.app.custom_agents.task_formatter_agent.validate_task_description"
+    ) as mock_validate:
+        mock_validate.side_effect = ValidationError(
+            "Validation failed", {"field": "task_description"}
+        )
+
+        result = format_task_sync("This is a valid task description with sufficient length.")
+
+        assert isinstance(result, TaskFormatterResponse)
+        assert result.success is False
+        assert result.data is None
+        assert result.error is not None
+        assert result.error["type"] == TaskFormatterErrorType.VALIDATION_ERROR
+        assert "Validation failed" in result.error["message"]
+        assert result.error["details"] == {"field": "task_description"}
+
+
+def test_parsing_error_handling_sync(mock_runner):
+    """Test parsing error handling in format_task_sync method."""
+    mock_runner.run_sync.return_value = MockRunnerResult("Invalid JSON")
+
+    with patch("backend.app.custom_agents.task_formatter_agent._parse_json_response") as mock_parse:
+        mock_parse.side_effect = ParsingError(
+            "Parsing failed", {"original_response": "Invalid JSON"}
+        )
+
+        result = format_task_sync("This is a valid task description with sufficient length.")
+
+        assert isinstance(result, TaskFormatterResponse)
+        assert result.success is False
+        assert result.data is None
+        assert result.error is not None
+        assert result.error["type"] == TaskFormatterErrorType.PARSING_ERROR
+        assert "Parsing failed" in result.error["message"]
+        assert result.error["details"] == {"original_response": "Invalid JSON"}
 
 
 @pytest.mark.asyncio
@@ -227,6 +317,80 @@ async def test_authentication_error_handling(mock_runner):
     assert result.error is not None
     assert result.error["type"] == TaskFormatterErrorType.AUTHENTICATION_ERROR
     assert "Authentication" in result.error["message"] or "API error" in result.error["message"]
+
+
+@pytest.mark.asyncio
+async def test_server_error_handling(mock_runner):
+    """Test server error handling in format_task method."""
+    error = AgentsException("Server error: 500 Internal Server Error")
+    mock_runner.run.side_effect = error
+
+    result = await format_task("This is a valid task description with sufficient length.")
+
+    assert isinstance(result, TaskFormatterResponse)
+    assert result.success is False
+    assert result.data is None
+    assert result.error is not None
+    assert result.error["type"] == TaskFormatterErrorType.SERVER_ERROR
+    assert "Server error" in result.error["message"] or "API error" in result.error["message"]
+
+    error_with_status = AgentsException("Server error")
+    error_with_status.status_code = 500
+    mock_runner.run.side_effect = error_with_status
+
+    result = await format_task("This is a valid task description with sufficient length.")
+    assert result.error["details"].get("status_code") == 500
+
+
+@pytest.mark.asyncio
+async def test_generic_exception_handling(mock_runner):
+    """Test generic exception handling in format_task method."""
+    mock_runner.run.side_effect = Exception("Unexpected error")
+
+    result = await format_task("This is a valid task description with sufficient length.")
+
+    assert isinstance(result, TaskFormatterResponse)
+    assert result.success is False
+    assert result.data is None
+    assert result.error is not None
+    assert result.error["type"] == TaskFormatterErrorType.UNKNOWN_ERROR
+    assert "Unexpected error" in result.error["message"]
+
+
+def test_server_error_handling_sync(mock_runner):
+    """Test server error handling in format_task_sync method."""
+    error = AgentsException("Server error: 500 Internal Server Error")
+    mock_runner.run_sync.side_effect = error
+
+    result = format_task_sync("This is a valid task description with sufficient length.")
+
+    assert isinstance(result, TaskFormatterResponse)
+    assert result.success is False
+    assert result.data is None
+    assert result.error is not None
+    assert result.error["type"] == TaskFormatterErrorType.SERVER_ERROR
+    assert "Server error" in result.error["message"] or "API error" in result.error["message"]
+
+    error_with_status = AgentsException("Server error")
+    error_with_status.status_code = 500
+    mock_runner.run_sync.side_effect = error_with_status
+
+    result = format_task_sync("This is a valid task description with sufficient length.")
+    assert result.error["details"].get("status_code") == 500
+
+
+def test_generic_exception_handling_sync(mock_runner):
+    """Test generic exception handling in format_task_sync method."""
+    mock_runner.run_sync.side_effect = Exception("Unexpected error")
+
+    result = format_task_sync("This is a valid task description with sufficient length.")
+
+    assert isinstance(result, TaskFormatterResponse)
+    assert result.success is False
+    assert result.data is None
+    assert result.error is not None
+    assert result.error["type"] == TaskFormatterErrorType.UNKNOWN_ERROR
+    assert "Unexpected error" in result.error["message"]
 
 
 def test_task_definition_model():
