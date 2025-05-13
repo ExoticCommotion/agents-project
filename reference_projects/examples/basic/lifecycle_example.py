@@ -2,9 +2,8 @@ import asyncio
 import random
 from typing import Any
 
-from pydantic import BaseModel
-
 from agents import Agent, RunContextWrapper, RunHooks, Runner, Tool, Usage, function_tool
+from pydantic import BaseModel
 
 
 class ExampleHooks(RunHooks):
