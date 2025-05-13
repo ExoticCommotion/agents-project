@@ -5,11 +5,15 @@
 export PYTHONPATH := src
 EXCLUDES := --exclude reference_projects
 
+# Default branch to compare against
+BASE_BRANCH := main
+
 .PHONY: setup sync sync-dev format lint typecheck test coverage \
         test-unit test-integration test-cli \
         snapshots-fix snapshots-create \
         build-docs build-full-docs serve-docs deploy-docs \
-        check clean reset help dev
+        check clean reset help dev sanity \
+		unhook-precommit verify get-pr-diff
 
 # ========== 👶 Zero-Onboarding Setup ==========
 setup:  ## One-command project bootstrap: installs uv, creates .venv, syncs dev deps
@@ -107,3 +111,32 @@ help:  ## Show available make commands
 
 sanity:
 	uv run python -m src.backend.agent_hello_world
+
+
+# Default target PR branch, can be overridden from the command line
+# Example: make get-pr-diff TARGET_BRANCH_NAME=another/feature-branch
+TARGET_BRANCH_NAME ?= devin/1747167891-implement-feedback-synthesizer
+
+# --- Helper variables (still useful for clarity and minor customization) ---
+REMOTE_TARGET_BRANCH := origin/$(TARGET_BRANCH_NAME)
+FILENAME_TAG := $(shell echo $(TARGET_BRANCH_NAME) | sed 's|/|-|g') # Sanitize for filename
+OUTPUT_DIR := outputs
+DIFF_FILE := $(OUTPUT_DIR)/pr_diff_$(FILENAME_TAG).txt
+
+# Save PR diff to outputs/<pr>-<timestamp>.patch
+# Usage: make pr-diff PR=devin-1747167891-implement-feedback-synthesizer
+pr-diff:
+	@if [ -z "$(PR)" ]; then \
+		echo "❌  Please provide PR=<branch-name>"; exit 1; \
+	fi
+	@git fetch origin
+	@if ! git rev-parse --verify $(PR) >/dev/null 2>&1; then \
+		echo "❌  Branch '$(PR)' not found locally. Try 'git fetch origin <branch>' first."; \
+		exit 1; \
+	fi
+	@mkdir -p outputs
+	@STAMP=$$(date -u +"%Y%m%dT%H%M%SZ"); \
+	FILE="outputs/$(PR)-$$STAMP.patch"; \
+	BASE=$$(git merge-base origin/main $(PR)); \
+	echo "📎  Saving diff from base $$BASE...$(PR) to $$FILE"; \
+	git diff $$BASE...$(PR) > $$FILE && echo "✅  Diff written to $$FILE"
