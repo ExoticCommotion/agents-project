@@ -5,9 +5,11 @@ This module defines the Execution Coordinator Agent, which is responsible for co
 the execution of Devin tickets.
 """
 
-from ai_project_manager.core.data_models import DevinTicket, ExecutionResult
-from ai_project_manager.tools.devin_session_manager import DevinSessionManager
+from backend.app.core.data_models import DevinTicket, ExecutionResult
+from backend.app.tools.devin_session_manager import DevinSessionManager
 from backend.app.utils.logger import get_logger
+
+__all__ = ["ExecutionCoordinatorAgent", "ExecutionResult"]
 
 logger = get_logger(__name__)
 

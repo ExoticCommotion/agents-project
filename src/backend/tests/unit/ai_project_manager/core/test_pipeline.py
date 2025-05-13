@@ -2,26 +2,17 @@
 Unit tests for the Pipeline Orchestrator.
 """
 
-from backend.app.custom_agents.ai_project_manager.agents.execution_coordinator import (
+from backend.app.core.data_models import HighLevelGoal, LearningProposal
+from backend.app.core.pipeline import PipelineOrchestrator
+from backend.app.custom_agents.aipm_agents import (
     ExecutionCoordinatorAgent,
-)
-from backend.app.custom_agents.ai_project_manager.agents.feedback_analyzer import (
     FeedbackAnalyzerAgent,
-)
-from backend.app.custom_agents.ai_project_manager.agents.feedback_synthesizer import (
     FeedbackSynthesizerAgent,
+    PlannerAgent,
+    PrioritizerAgent,
+    TaskDefinerAgent,
 )
-from backend.app.custom_agents.ai_project_manager.agents.planner import PlannerAgent
-from backend.app.custom_agents.ai_project_manager.agents.prioritizer import PrioritizerAgent
-from backend.app.custom_agents.ai_project_manager.agents.task_definer import TaskDefinerAgent
-from backend.app.custom_agents.ai_project_manager.core.data_models import (
-    HighLevelGoal,
-    LearningProposal,
-)
-from backend.app.custom_agents.ai_project_manager.core.pipeline import PipelineOrchestrator
-from backend.app.custom_agents.ai_project_manager.tools.devin_session_manager import (
-    DevinSessionManager,
-)
+from backend.app.tools.devin_session_manager import DevinSessionManager
 
 
 def test_pipeline_orchestrator_exists() -> None:

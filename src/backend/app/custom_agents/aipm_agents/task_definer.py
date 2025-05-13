@@ -5,8 +5,10 @@ This module defines the Task Definer Agent, which is responsible for creating ep
 tickets from structured plans.
 """
 
-from ai_project_manager.core.data_models import DevinTicket, Epic, StructuredPlan
+from backend.app.core.data_models import DevinTicket, Epic, StructuredPlan
 from backend.app.utils.logger import get_logger
+
+__all__ = ["TaskDefinerAgent"]
 
 logger = get_logger(__name__)
 

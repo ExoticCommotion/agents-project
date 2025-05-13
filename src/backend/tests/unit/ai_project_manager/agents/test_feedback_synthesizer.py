@@ -2,14 +2,8 @@
 Unit tests for the Feedback Synthesizer Agent.
 """
 
-from backend.app.custom_agents.ai_project_manager.agents.feedback_synthesizer import (
-    FeedbackSynthesizerAgent,
-)
-from backend.app.custom_agents.ai_project_manager.core.data_models import (
-    FeedbackContent,
-    LearningProposal,
-    StructuredAnalysisReport,
-)
+from backend.app.core.data_models import FeedbackContent, LearningProposal, StructuredAnalysisReport
+from backend.app.custom_agents.aipm_agents.feedback_synthesizer import FeedbackSynthesizerAgent
 
 
 def test_feedback_synthesizer_agent_exists() -> None:

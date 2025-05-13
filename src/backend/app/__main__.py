@@ -8,8 +8,8 @@ from the command line.
 import json
 import sys
 
-from ai_project_manager.core.data_models import HighLevelGoal
-from ai_project_manager.core.pipeline import PipelineOrchestrator
+from backend.app.core.data_models import HighLevelGoal
+from backend.app.core.pipeline import PipelineOrchestrator
 from backend.app.utils.logger import get_logger
 
 logger = get_logger(__name__)

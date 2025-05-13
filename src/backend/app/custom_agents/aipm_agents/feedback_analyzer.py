@@ -5,8 +5,10 @@ This module defines the Feedback Analyzer Agent, which is responsible for analyz
 execution results and providing structured analysis reports.
 """
 
-from ai_project_manager.core.data_models import ExecutionResult, StructuredAnalysisReport
+from backend.app.core.data_models import ExecutionResult, StructuredAnalysisReport
 from backend.app.utils.logger import get_logger
+
+__all__ = ["ExecutionResult"]
 
 logger = get_logger(__name__)
 

@@ -5,12 +5,10 @@ This module defines the Feedback Synthesizer Agent, which is responsible for syn
 feedback and analysis reports into learning proposals.
 """
 
-from ai_project_manager.core.data_models import (
-    FeedbackContent,
-    LearningProposal,
-    StructuredAnalysisReport,
-)
+from backend.app.core.data_models import FeedbackContent, LearningProposal, StructuredAnalysisReport
 from backend.app.utils.logger import get_logger
+
+__all__ = ["FeedbackSynthesizerAgent", "FeedbackContent"]
 
 logger = get_logger(__name__)
 

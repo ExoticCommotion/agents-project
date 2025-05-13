@@ -8,7 +8,6 @@ import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from backend.app.custom_agents.ai_project_manager.api import router as aipm_router
 from backend.app.utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -26,10 +25,6 @@ class TaskRequest(BaseModel):
 async def health_check() -> dict[str, str]:
     """Health check endpoint."""
     return {"status": "ok"}
-
-
-# Include the AI Project Manager router
-app.include_router(aipm_router)
 
 
 def run_app() -> None:

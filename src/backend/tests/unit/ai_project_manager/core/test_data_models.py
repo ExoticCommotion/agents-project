@@ -2,12 +2,7 @@
 Unit tests for the data models.
 """
 
-from ai_project_manager.core.data_models import (
-    DevinTicket,
-    Epic,
-    HighLevelGoal,
-    StructuredPlan,
-)
+from backend.app.core.data_models import DevinTicket, Epic, HighLevelGoal, StructuredPlan
 
 
 def test_high_level_goal() -> None:

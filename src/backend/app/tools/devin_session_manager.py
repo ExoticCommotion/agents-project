@@ -5,7 +5,7 @@ This module defines the Devin Session Manager, which is responsible for creating
 managing Devin sessions for executing tickets.
 """
 
-from ai_project_manager.core.data_models import DevinTicket, ExecutionResult
+from backend.app.core.data_models import DevinTicket, ExecutionResult
 from backend.app.utils.logger import get_logger
 
 logger = get_logger(__name__)

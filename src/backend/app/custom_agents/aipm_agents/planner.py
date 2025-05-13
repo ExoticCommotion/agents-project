@@ -5,8 +5,10 @@ This module defines the Planner Agent, which is responsible for creating structu
 from high-level goals.
 """
 
-from ai_project_manager.core.data_models import HighLevelGoal, StructuredPlan
+from backend.app.core.data_models import HighLevelGoal, StructuredPlan
 from backend.app.utils.logger import get_logger
+
+__all__ = ["PlannerAgent", "StructuredPlan"]
 
 logger = get_logger(__name__)
 

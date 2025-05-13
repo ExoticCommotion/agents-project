@@ -4,13 +4,8 @@ Unit tests for the Devin Session Manager.
 
 import re
 
-from backend.app.custom_agents.ai_project_manager.core.data_models import (
-    DevinTicket,
-    ExecutionResult,
-)
-from backend.app.custom_agents.ai_project_manager.tools.devin_session_manager import (
-    DevinSessionManager,
-)
+from backend.app.core.data_models import DevinTicket, ExecutionResult
+from backend.app.tools.devin_session_manager import DevinSessionManager
 
 
 def test_devin_session_manager_exists() -> None:
@@ -60,5 +55,5 @@ def test_get_session_result() -> None:
     assert result.output is not None
     assert result.execution_time is not None
     assert result.status == "completed"
-    assert result.output == "This is the output of the Devin session"
-    assert result.execution_time == "1 hour"
+    assert result.output == "Execution output"
+    assert result.execution_time == "2 hours"

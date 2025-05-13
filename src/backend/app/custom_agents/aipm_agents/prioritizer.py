@@ -5,8 +5,10 @@ This module defines the Prioritizer Agent, which is responsible for prioritizing
 tickets based on their importance and dependencies.
 """
 
-from ai_project_manager.core.data_models import DevinTicket
+from backend.app.core.data_models import DevinTicket
 from backend.app.utils.logger import get_logger
+
+__all__ = ["PrioritizerAgent"]
 
 logger = get_logger(__name__)
 
