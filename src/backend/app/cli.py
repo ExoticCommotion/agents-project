@@ -6,7 +6,10 @@ import os
 import typer
 from rich import print
 
-from backend.app.custom_agents.ai_project_manager.core.data_models import HighLevelGoal, LearningProposal
+from backend.app.custom_agents.ai_project_manager.core.data_models import (
+    HighLevelGoal,
+    LearningProposal,
+)
 from backend.app.custom_agents.ai_project_manager.core.pipeline import PipelineOrchestrator
 from backend.app.utils.logger import get_logger
 
