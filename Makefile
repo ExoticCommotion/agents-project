@@ -126,17 +126,4 @@ DIFF_FILE := $(OUTPUT_DIR)/pr_diff_$(FILENAME_TAG).txt
 # Save PR diff to outputs/<pr>-<timestamp>.patch
 # Usage: make pr-diff PR=devin-1747167891-implement-feedback-synthesizer
 pr-diff:
-	@if [ -z "$(PR)" ]; then \
-		echo "❌  Please provide PR=<branch-name>"; exit 1; \
-	fi
-	@git fetch origin
-	@if ! git rev-parse --verify $(PR) >/dev/null 2>&1; then \
-		echo "❌  Branch '$(PR)' not found locally. Try 'git fetch origin <branch>' first."; \
-		exit 1; \
-	fi
-	@mkdir -p outputs
-	@STAMP=$$(date -u +"%Y%m%dT%H%M%SZ"); \
-	FILE="outputs/$(PR)-$$STAMP.patch"; \
-	BASE=$$(git merge-base origin/main $(PR)); \
-	echo "📎  Saving diff from base $$BASE...$(PR) to $$FILE"; \
-	git diff $$BASE...$(PR) > $$FILE && echo "✅  Diff written to $$FILE"
+	scripts/generate_pr_diffs.sh
