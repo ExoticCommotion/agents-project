@@ -1,13 +1,3 @@
-"""Devin Template CLI.
-
-Usage examples:
-    uv run python -m backend.app.cli greet                # → Hello, Example!
-    uv run python -m backend.app.cli greet "Example User" # → Hello, Example User!
-    uv run python -m backend.app.cli greet "Example" --times 3
-    uv run python -m backend.app.cli greet "Example" --excited
-    uv run python -m backend.app.cli format-task "Create a Python module that does X and Y."
-"""
-
 from __future__ import annotations
 
 import json
@@ -16,7 +6,6 @@ import os
 import typer
 from rich import print
 
-from backend.app.custom_agents.task_formatter_agent import format_task_sync
 from backend.app.utils.logger import get_logger
 
 app = typer.Typer(add_completion=False, help="🧠 Devin template CLI")
@@ -87,23 +76,6 @@ def format_task(
                 "verify": ["Test verification"],
                 "notes": ["Test note"],
             }
-        else:
-            response = format_task_sync(task_description)
-
-            if not response.success:
-                error_msg = "Unknown error occurred"
-                if response.error is not None:
-                    error_msg = response.error.get("message", "Unknown error occurred")
-                logger.error(f"Error formatting task: {error_msg}")
-                print(f"[bold red]Error:[/] {error_msg}")
-                raise typer.Exit(code=1)
-
-            if response.data is None:
-                logger.error("Error: No data returned from task formatter")
-                print("[bold red]Error:[/] No data returned from task formatter")
-                raise typer.Exit(code=1)
-
-            task_json = response.data
 
         indent = 2 if pretty else None
         formatted_json = json.dumps(task_json, indent=indent)

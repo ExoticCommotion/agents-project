@@ -58,13 +58,22 @@ coverage:  ## Run coverage and fail if <95%
 	uv run coverage report -m --fail-under=95
 
 # ========== 🧪 Combined Dev Check ==========
-check: format lint typecheck coverage  ## Run all quality checks (use before commit)
+check: autofix lint typecheck coverage  ## Run all quality checks (use before commit)
+
+autofix:  ## Auto-fix style issues before type/lint/test
+	uv run ruff check src --fix
+	uv run ruff format src
 
 snapshots-fix:  ## Fix failing inline snapshots
 	uv run pytest --inline-snapshot=fix
 
 snapshots-create:  ## Create initial inline snapshots
 	uv run pytest --inline-snapshot=create
+
+restore:
+	make clean
+	uv run scripts/dev-setup.bat
+	make check
 
 unhook-precommit:  ## Remove pre-commit hook as a last resort
 	pre-commit uninstall

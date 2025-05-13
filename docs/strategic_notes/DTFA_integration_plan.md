@@ -9,9 +9,9 @@ The primary Cognitive Controller needs to effectively decompose high-level strat
 ### 1.1 Hierarchical Goal Breakdown
 
 1. **Strategic Objectives**: The highest level goals that define the overall project direction (e.g., "Build a competitive e-commerce platform")
-   
+
 2. **Tactical Goals**: Mid-level goals that represent major components or milestones (e.g., "Implement user authentication system")
-   
+
 3. **Operational Tasks**: Low-level, specific tasks that can be directly formatted by the DTFA (e.g., "Create a password reset functionality")
 
 ### 1.2 Decomposition Strategies
