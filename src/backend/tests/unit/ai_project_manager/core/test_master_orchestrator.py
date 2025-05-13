@@ -2,8 +2,14 @@
 Unit tests for the Master Orchestrator Agent.
 """
 
-from backend.app.core.data_models import DevinTicket, HighLevelGoal
-from backend.app.core.master_orchestrator import MasterOrchestratorAgent
+
+from backend.app.core.data_models import DevinTicket
+from backend.app.custom_agents.ai_project_manager.core.data_models import (
+    InitiativeGoal,
+)
+from backend.app.custom_agents.ai_project_manager.core.master_orchestrator import (
+    MasterOrchestratorAgent,
+)
 
 
 def test_master_orchestrator_agent_exists() -> None:
@@ -22,7 +28,7 @@ def test_master_orchestrator_agent_initialization() -> None:
 def test_process_initiative() -> None:
     """Test that the process_initiative method returns a list of DevinTickets."""
     agent = MasterOrchestratorAgent()
-    goal = HighLevelGoal(
+    goal = InitiativeGoal(
         id="goal-123",
         title="Test Initiative",
         description="This is a test initiative",
@@ -34,4 +40,7 @@ def test_process_initiative() -> None:
     assert isinstance(tickets, list)
     assert len(tickets) > 0
     assert all(isinstance(ticket, DevinTicket) for ticket in tickets)
-    assert len(tickets) == len(agent.planner_tool.create_plan(goal).steps)
+
+    plan = agent.planner_tool.plan_initiative(goal)
+    expected_ticket_count = sum(len(wp.tasks) for wp in plan.work_packages)
+    assert len(tickets) == expected_ticket_count
