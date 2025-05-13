@@ -21,8 +21,8 @@ Write-Host "📦 Syncing dependencies..."
 uv sync --all-extras --all-packages --group dev
 
 # Install pre-commit hooks
-Write-Host "✅ Installing pre-commit hooks..."
-uv run pre-commit install
+# Write-Host "✅ Installing pre-commit hooks..."
+# uv run pre-commit install
 
 Write-Host "`n🚀 Environment ready. You can now run:"
 Write-Host "   uv run pytest"

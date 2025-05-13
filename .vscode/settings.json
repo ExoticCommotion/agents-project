@@ -7,7 +7,7 @@
   "python.linting.mypyArgs": ["--strict"],
   "git.promptToSaveFilesBeforeCommit": "always",
   "git.suggestSmartCommit": false,
-  "git.enableSmartCommit": true,
+  "git.enableSmartCommit": false,
   "git.autofetch": true,
   "git.allowForcePush": true,
 

@@ -55,7 +55,7 @@ synthesizer_agent = Agent(
 )
 
 
-async def main():
+async def main() -> None:
     msg = input("Hi! What would you like translated, and to which languages? ")
 
     # Run the entire orchestration in a single trace

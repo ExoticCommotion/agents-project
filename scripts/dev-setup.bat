@@ -21,9 +21,9 @@ REM Sync dependencies using uv
 echo 📦 Syncing dependencies...
 uv sync --all-extras --all-packages --group dev
 
-REM Install pre-commit hooks
-echo ✅ Installing pre-commit hooks...
-uv run pre-commit install
+@REM REM Install pre-commit hooks
+@REM echo ✅ Installing pre-commit hooks...
+@REM uv run pre-commit install
 
 echo 🚀 Environment ready. You can now run:
 echo    uv run pytest

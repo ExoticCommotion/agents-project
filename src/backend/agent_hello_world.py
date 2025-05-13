@@ -3,7 +3,7 @@ import asyncio
 from agents import Agent, Runner
 
 
-async def main():
+async def main() -> None:
     agent = Agent(
         name="Assistant",
         instructions="You only respond in haikus.",

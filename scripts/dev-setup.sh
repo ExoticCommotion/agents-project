@@ -22,8 +22,8 @@ echo "📦 Syncing dependencies..."
 uv sync --all-extras --all-packages --group dev
 
 # Install pre-commit hooks
-echo "✅ Installing pre-commit hooks..."
-uv run pre-commit install
+# echo "✅ Installing pre-commit hooks..."
+# uv run pre-commit install
 
 echo "🚀 Environment setup complete! You can now run:"
 echo "   uv run pytest"
