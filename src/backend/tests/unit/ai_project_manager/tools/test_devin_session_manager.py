@@ -2,6 +2,8 @@
 Unit tests for the Devin Session Manager.
 """
 
+import re
+
 from backend.app.custom_agents.ai_project_manager.core.data_models import (
     DevinTicket,
     ExecutionResult,
@@ -41,6 +43,8 @@ def test_create_session() -> None:
 
     assert isinstance(session_id, str)
     assert len(session_id) > 0
+    assert session_id.startswith("session-")
+    assert re.match(r"session-\d+", session_id) is not None
 
 
 def test_get_session_result() -> None:
@@ -55,3 +59,6 @@ def test_get_session_result() -> None:
     assert result.status is not None
     assert result.output is not None
     assert result.execution_time is not None
+    assert result.status == "completed"
+    assert result.output == "This is the output of the Devin session"
+    assert result.execution_time == "1 hour"
