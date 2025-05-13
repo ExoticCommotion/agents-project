@@ -52,10 +52,10 @@ verify:  ## Run full pre-commit suite for local validation
 	uv run pre-commit run --all-files
 
 # ========== 📈 Coverage & Snapshots ==========
-coverage:  ## Run coverage and fail if <20%
+coverage:  ## Run coverage and fail if <60%
 	uv run coverage run -m pytest
 	uv run coverage xml -o coverage.xml
-	uv run coverage report -m --fail-under=20
+	uv run coverage report -m --fail-under=60
 
 # ========== 🧪 Combined Dev Check ==========
 check: format lint typecheck coverage  ## Run all quality checks (use before commit)
