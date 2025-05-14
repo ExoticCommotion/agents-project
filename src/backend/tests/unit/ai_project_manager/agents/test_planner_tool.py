@@ -2,8 +2,11 @@
 Unit tests for the Planner Tool Agent.
 """
 
-from backend.app.core.data_models import HighLevelGoal, StructuredPlan
-from backend.app.custom_agents.aipm_agents.planner_tool import PlannerTool
+from backend.app.custom_agents.ai_project_manager.agents.planner_tool import PlannerTool
+from backend.app.custom_agents.ai_project_manager.core.data_models import (
+    DecompositionPlan,
+    InitiativeGoal,
+)
 
 
 def test_planner_tool_exists() -> None:
@@ -17,23 +20,23 @@ def test_planner_tool_initialization() -> None:
     assert isinstance(tool, PlannerTool)
 
 
-def test_create_plan() -> None:
-    """Test that the create_plan method returns a StructuredPlan."""
+def test_plan_initiative() -> None:
+    """Test that the plan_initiative method returns a DecompositionPlan."""
     tool = PlannerTool()
-    goal = HighLevelGoal(
+    initiative = InitiativeGoal(
         id="goal-123",
         title="Test Goal",
         description="This is a test goal",
         context="Test context",
     )
 
-    plan = tool.create_plan(goal)
+    plan = tool.plan_initiative(initiative)
 
-    assert isinstance(plan, StructuredPlan)
-    assert plan.goal_id == goal.id
+    assert isinstance(plan, DecompositionPlan)
+    assert plan.goal_id == initiative.id
     assert plan.plan_id is not None
     assert plan.title is not None
     assert plan.description is not None
-    assert len(plan.steps) > 0
+    assert len(plan.work_packages) > 0
     assert plan.estimated_complexity > 0
     assert plan.estimated_time is not None

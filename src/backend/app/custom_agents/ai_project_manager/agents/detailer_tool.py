@@ -5,9 +5,11 @@ This module defines the Detailer Tool Agent, which is responsible for providing
 detailed information about work packages and tasks.
 """
 
-
 from backend.app.core.data_models import DevinTicket
-from backend.app.custom_agents.ai_project_manager.core.data_models import WorkPackage
+from backend.app.custom_agents.ai_project_manager.core.data_models import (
+    DecompositionPlan,
+    WorkPackage,
+)
 from backend.app.utils.logger import get_logger
 
 __all__ = ["DetailerTool", "DevinTicket"]
@@ -57,3 +59,50 @@ class DetailerTool:
             logger.info(f"Created ticket: {ticket.title}")
 
         return tickets
+
+    def create_ticket(self, plan: DecompositionPlan, work_package_index: int) -> DevinTicket:
+        """
+        Create a detailed ticket from a decomposition plan for a specific work package.
+
+        Args:
+            plan: The decomposition plan containing work packages
+            work_package_index: The index of the work package to create a ticket for
+
+        Returns:
+            A detailed ticket with acceptance criteria and expectations
+        """
+        logger.info(
+            f"Creating ticket for plan: {plan.title}, work package index: {work_package_index}"
+        )
+
+        if 0 <= work_package_index < len(plan.work_packages):
+            work_package = plan.work_packages[work_package_index]
+
+            if work_package.tasks:
+                task = work_package.tasks[0]
+                ticket = DevinTicket(
+                    ticket_id=f"ticket-{hash(work_package.package_id) % 10000}",
+                    epic_id=f"epic-{hash(plan.plan_id) % 10000}",
+                    title=f"Implement: {task}",
+                    description=f"Implementation of task from work package: {work_package.title}",
+                    input_files=["placeholder.py"],
+                    output_expectation="Expected functionality as described",
+                    acceptance_criteria=["Code compiles", "Tests pass", "Documentation complete"],
+                    priority=3,
+                    status="ready",
+                )
+                logger.info(f"Created ticket: {ticket.title}")
+                return ticket
+
+        logger.warning(f"Invalid work package index: {work_package_index}, creating default ticket")
+        return DevinTicket(
+            ticket_id=f"ticket-default-{hash(plan.plan_id) % 10000}",
+            epic_id=f"epic-{hash(plan.plan_id) % 10000}",
+            title="Default Ticket",
+            description=f"Default ticket for plan: {plan.title}",
+            input_files=["placeholder.py"],
+            output_expectation="Expected functionality as described",
+            acceptance_criteria=["Code compiles", "Tests pass", "Documentation complete"],
+            priority=3,
+            status="ready",
+        )

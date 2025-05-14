@@ -2,8 +2,12 @@
 Unit tests for the Task Definer Agent.
 """
 
-from backend.app.core.data_models import DevinTicket, Epic, StructuredPlan
-from backend.app.custom_agents.aipm_agents.task_definer import TaskDefinerAgent
+from backend.app.core.data_models import DevinTicket, Epic
+from backend.app.custom_agents.ai_project_manager.agents.task_definer import TaskDefinerAgent
+from backend.app.custom_agents.ai_project_manager.core.data_models import (
+    DecompositionPlan,
+    WorkPackage,
+)
 
 
 def test_task_definer_agent_exists() -> None:
@@ -20,12 +24,21 @@ def test_task_definer_agent_initialization() -> None:
 def test_create_epics() -> None:
     """Test that the create_epics method returns a list of Epics."""
     agent = TaskDefinerAgent()
-    plan = StructuredPlan(
+    work_package = WorkPackage(
+        package_id="package-789",
+        plan_id="plan-456",
+        title="Test Work Package",
+        description="This is a test work package",
+        tasks=["Task 1", "Task 2"],
+        estimated_complexity=2,
+        estimated_time="1 day",
+    )
+    plan = DecompositionPlan(
         goal_id="goal-123",
         plan_id="plan-456",
         title="Test Plan",
         description="This is a test plan",
-        steps=["Step 1", "Step 2"],
+        work_packages=[work_package],
         estimated_complexity=3,
         estimated_time="2 days",
     )

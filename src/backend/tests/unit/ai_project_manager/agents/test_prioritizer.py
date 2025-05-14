@@ -3,7 +3,7 @@ Unit tests for the Prioritizer Agent.
 """
 
 from backend.app.core.data_models import DevinTicket
-from backend.app.custom_agents.aipm_agents.prioritizer import PrioritizerAgent
+from backend.app.custom_agents.ai_project_manager.agents.prioritizer import PrioritizerAgent
 
 
 def test_prioritizer_agent_exists() -> None:

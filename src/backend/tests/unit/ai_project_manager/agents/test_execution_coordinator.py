@@ -2,10 +2,9 @@
 Unit tests for the Execution Coordinator Agent.
 """
 
-from backend.app.custom_agents.aipm_agents.execution_coordinator import (
-    DevinTicket,
+from backend.app.core.data_models import DevinTicket, ExecutionResult
+from backend.app.custom_agents.ai_project_manager.agents.execution_coordinator import (
     ExecutionCoordinatorAgent,
-    ExecutionResult,
 )
 
 
