@@ -2,8 +2,10 @@
 Unit tests for the Planner Tool Agent.
 """
 
-from backend.app.core.data_models import HighLevelGoal
-from backend.app.custom_agents.ai_project_manager.agents.planner_tool import DecompositionPlan, PlannerTool
+from backend.app.custom_agents.ai_project_manager.agents.planner_tool import (
+    DecompositionPlan,
+    PlannerTool,
+)
 from backend.app.custom_agents.ai_project_manager.core.data_models import InitiativeGoal
 
 

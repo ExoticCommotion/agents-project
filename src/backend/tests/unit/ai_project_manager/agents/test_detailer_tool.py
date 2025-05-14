@@ -36,7 +36,7 @@ def test_detail_work_package() -> None:
     assert isinstance(tickets, list)
     assert len(tickets) > 0
     assert all(isinstance(ticket, DevinTicket) for ticket in tickets)
-    
+
     ticket = tickets[0]
     assert ticket.ticket_id is not None
     assert ticket.epic_id is not None
