@@ -5,7 +5,6 @@ This module defines the Detailer Tool Agent, which is responsible for providing
 detailed information about work packages and tasks.
 """
 
-
 from backend.app.core.data_models import DevinTicket
 from backend.app.custom_agents.ai_project_manager.core.data_models import WorkPackage
 from backend.app.utils.logger import get_logger

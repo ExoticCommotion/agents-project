@@ -2,7 +2,6 @@
 Unit tests for the AI Project Manager Detailer Tool Agent.
 """
 
-
 from backend.app.core.data_models import DevinTicket
 from backend.app.custom_agents.ai_project_manager.agents.detailer_tool import DetailerTool
 from backend.app.custom_agents.ai_project_manager.core.data_models import WorkPackage

@@ -12,7 +12,7 @@ from backend.app.custom_agents.ai_project_manager.core.data_models import (
 )
 from backend.app.utils.logger import get_logger
 
-__all__ = ["PlannerTool", "DecompositionPlan"]
+__all__ = ["PlannerTool"]
 
 logger = get_logger(__name__)
 
