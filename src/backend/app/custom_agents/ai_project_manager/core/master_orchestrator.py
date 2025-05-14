@@ -5,11 +5,10 @@ This module defines the Master Orchestrator Agent, which is responsible for
 orchestrating the AI Project Manager pipeline.
 """
 
-
 from backend.app.core.data_models import DevinTicket
-from backend.app.custom_agents.ai_project_manager.agents.detailer_tool import DetailerTool
-from backend.app.custom_agents.ai_project_manager.agents.planner_tool import PlannerTool
 from backend.app.custom_agents.ai_project_manager.core.data_models import InitiativeGoal
+from backend.app.custom_agents.ai_project_manager.tools.detailer_tool import DetailerTool
+from backend.app.custom_agents.ai_project_manager.tools.planner_tool import PlannerTool
 from backend.app.utils.logger import get_logger
 
 __all__ = ["MasterOrchestratorAgent"]

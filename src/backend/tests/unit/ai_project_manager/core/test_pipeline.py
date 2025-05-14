@@ -4,7 +4,7 @@ Unit tests for the Pipeline Orchestrator.
 
 from backend.app.core.data_models import HighLevelGoal, LearningProposal
 from backend.app.core.pipeline import PipelineOrchestrator
-from backend.app.custom_agents.aipm_agents import (
+from backend.app.custom_agents.ai_project_manager.agents import (
     ExecutionCoordinatorAgent,
     FeedbackAnalyzerAgent,
     FeedbackSynthesizerAgent,

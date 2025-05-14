@@ -3,7 +3,7 @@ Unit tests for the Detailer Tool Agent.
 """
 
 from backend.app.core.data_models import DevinTicket, StructuredPlan
-from backend.app.custom_agents.aipm_agents.detailer_tool import DetailerTool
+from backend.app.custom_agents.ai_project_manager.tools.detailer_tool import DetailerTool
 
 
 def test_detailer_tool_exists() -> None:
