@@ -6,12 +6,12 @@ the flow of data between the different agents in the AI Project Manager.
 """
 
 from backend.app.core.data_models import HighLevelGoal, LearningProposal
-from backend.app.custom_agents.aipm_agents.execution_coordinator import ExecutionCoordinatorAgent
-from backend.app.custom_agents.aipm_agents.feedback_analyzer import FeedbackAnalyzerAgent
-from backend.app.custom_agents.aipm_agents.feedback_synthesizer import FeedbackSynthesizerAgent
-from backend.app.custom_agents.aipm_agents.planner import PlannerAgent
-from backend.app.custom_agents.aipm_agents.prioritizer import PrioritizerAgent
-from backend.app.custom_agents.aipm_agents.task_definer import TaskDefinerAgent
+from backend.app.custom_agents.ai_project_manager.agents.execution_coordinator import ExecutionCoordinatorAgent
+from backend.app.custom_agents.ai_project_manager.agents.feedback_analyzer import FeedbackAnalyzerAgent
+from backend.app.custom_agents.ai_project_manager.agents.feedback_synthesizer import FeedbackSynthesizerAgent
+from backend.app.custom_agents.ai_project_manager.agents.planner_tool import PlannerTool
+from backend.app.custom_agents.ai_project_manager.agents.prioritizer import PrioritizerAgent
+from backend.app.custom_agents.ai_project_manager.agents.task_definer import TaskDefinerAgent
 from backend.app.tools.devin_session_manager import DevinSessionManager
 from backend.app.utils.logger import get_logger
 
@@ -29,7 +29,7 @@ class PipelineOrchestrator:
     def __init__(self) -> None:
         """Initialize the Pipeline Orchestrator."""
         logger.info("Initializing Pipeline Orchestrator")
-        self.planner = PlannerAgent()
+        self.planner = PlannerTool()
         self.task_definer = TaskDefinerAgent()
         self.prioritizer = PrioritizerAgent()
         self.execution_coordinator = ExecutionCoordinatorAgent()

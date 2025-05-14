@@ -4,11 +4,12 @@ Unit tests for the Pipeline Orchestrator.
 
 from backend.app.core.data_models import HighLevelGoal, LearningProposal
 from backend.app.core.pipeline import PipelineOrchestrator
-from backend.app.custom_agents.aipm_agents import (
+from backend.app.custom_agents.ai_project_manager.agents import (
+    DetailerTool,
     ExecutionCoordinatorAgent,
     FeedbackAnalyzerAgent,
     FeedbackSynthesizerAgent,
-    PlannerAgent,
+    PlannerTool,
     PrioritizerAgent,
     TaskDefinerAgent,
 )
@@ -30,7 +31,7 @@ def test_pipeline_orchestrator_agents_initialization() -> None:
     """Test that all agents are properly initialized in the PipelineOrchestrator."""
     orchestrator = PipelineOrchestrator()
 
-    assert isinstance(orchestrator.planner, PlannerAgent)
+    assert isinstance(orchestrator.planner, PlannerTool)
     assert isinstance(orchestrator.task_definer, TaskDefinerAgent)
     assert isinstance(orchestrator.prioritizer, PrioritizerAgent)
     assert isinstance(orchestrator.execution_coordinator, ExecutionCoordinatorAgent)

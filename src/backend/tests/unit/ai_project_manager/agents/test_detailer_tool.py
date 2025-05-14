@@ -2,8 +2,9 @@
 Unit tests for the Detailer Tool Agent.
 """
 
-from backend.app.core.data_models import DevinTicket, StructuredPlan
-from backend.app.custom_agents.aipm_agents.detailer_tool import DetailerTool
+from backend.app.core.data_models import DevinTicket
+from backend.app.custom_agents.ai_project_manager.agents.detailer_tool import DetailerTool
+from backend.app.custom_agents.ai_project_manager.core.data_models import WorkPackage
 
 
 def test_detailer_tool_exists() -> None:
@@ -17,22 +18,26 @@ def test_detailer_tool_initialization() -> None:
     assert isinstance(tool, DetailerTool)
 
 
-def test_create_ticket() -> None:
-    """Test that the create_ticket method returns a DevinTicket."""
+def test_detail_work_package() -> None:
+    """Test that the detail_work_package method returns a list of DevinTickets."""
     tool = DetailerTool()
-    plan = StructuredPlan(
-        goal_id="goal-123",
+    work_package = WorkPackage(
+        package_id="wp-123",
         plan_id="plan-456",
-        title="Test Plan",
-        description="This is a test plan",
-        steps=["Step 1: Do something", "Step 2: Do something else"],
+        title="Test Work Package",
+        description="This is a test work package",
+        tasks=["Task 1: Do something", "Task 2: Do something else"],
         estimated_complexity=3,
         estimated_time="2 days",
     )
 
-    ticket = tool.create_ticket(plan, 0)
+    tickets = tool.detail_work_package(work_package)
 
-    assert isinstance(ticket, DevinTicket)
+    assert isinstance(tickets, list)
+    assert len(tickets) > 0
+    assert all(isinstance(ticket, DevinTicket) for ticket in tickets)
+    
+    ticket = tickets[0]
     assert ticket.ticket_id is not None
     assert ticket.epic_id is not None
     assert ticket.title is not None
@@ -44,23 +49,20 @@ def test_create_ticket() -> None:
     assert ticket.status is not None
 
 
-def test_create_ticket_out_of_range() -> None:
-    """Test that the create_ticket method handles out of range step indices."""
+def test_detail_work_package_empty() -> None:
+    """Test that the detail_work_package method handles work packages with no tasks."""
     tool = DetailerTool()
-    plan = StructuredPlan(
-        goal_id="goal-123",
+    work_package = WorkPackage(
+        package_id="wp-123",
         plan_id="plan-456",
-        title="Test Plan",
-        description="This is a test plan",
-        steps=["Step 1: Do something"],
+        title="Test Work Package",
+        description="This is a test work package",
+        tasks=[],  # Empty tasks list
         estimated_complexity=3,
         estimated_time="2 days",
     )
 
-    ticket = tool.create_ticket(plan, 5)  # Out of range index
+    tickets = tool.detail_work_package(work_package)
 
-    assert isinstance(ticket, DevinTicket)
-    assert ticket.ticket_id is not None
-    assert ticket.epic_id is not None
-    assert ticket.title is not None
-    assert ticket.description is not None
+    assert isinstance(tickets, list)
+    assert len(tickets) == 0  # Should return empty list for empty tasks

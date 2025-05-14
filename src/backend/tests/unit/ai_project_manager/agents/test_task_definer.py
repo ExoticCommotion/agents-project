@@ -3,7 +3,7 @@ Unit tests for the Task Definer Agent.
 """
 
 from backend.app.core.data_models import DevinTicket, Epic, StructuredPlan
-from backend.app.custom_agents.aipm_agents.task_definer import TaskDefinerAgent
+from backend.app.custom_agents.ai_project_manager.agents.task_definer import TaskDefinerAgent
 
 
 def test_task_definer_agent_exists() -> None:

@@ -3,7 +3,7 @@ Unit tests for the Feedback Analyzer Agent.
 """
 
 from backend.app.core.data_models import ExecutionResult, StructuredAnalysisReport
-from backend.app.custom_agents.aipm_agents.feedback_analyzer import FeedbackAnalyzerAgent
+from backend.app.custom_agents.ai_project_manager.agents.feedback_analyzer import FeedbackAnalyzerAgent
 
 
 def test_feedback_analyzer_agent_exists() -> None:
