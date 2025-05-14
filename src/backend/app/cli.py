@@ -7,12 +7,8 @@ import os
 import typer
 from rich import print
 
-from backend.app.core.data_models import HighLevelGoal, LearningProposal
-from backend.app.core.pipeline import PipelineOrchestrator
-from backend.app.custom_agents.ai_project_manager.core.data_models import InitiativeGoal
-from backend.app.custom_agents.ai_project_manager.core.master_orchestrator import (
-    MasterOrchestratorAgent,
-)
+from backend.app.core.data_models import HighLevelGoal, InitiativeGoal, LearningProposal
+from backend.app.core.orchestration.project_orchestrator import ProjectOrchestrator
 from backend.app.utils.logger import get_logger
 
 app = typer.Typer(add_completion=False, help="🧠 Devin template CLI")
@@ -147,7 +143,7 @@ def process_goal(
                 implementation_steps=["Test implementation step"],
             )
         else:
-            orchestrator = PipelineOrchestrator()
+            orchestrator = ProjectOrchestrator()
             learning_proposal = orchestrator.run_placeholder_pipeline(goal)
 
         result = {
@@ -203,9 +199,9 @@ def aipm_process_initiative(
             description=initiative_goal_description,
         )
 
-        master_orchestrator_agent = MasterOrchestratorAgent()
+        orchestrator = ProjectOrchestrator()
 
-        tickets = master_orchestrator_agent.process_initiative(initiative_goal)
+        tickets = orchestrator.process_initiative(initiative_goal)
 
         ticket_dicts = [dataclasses.asdict(ticket) for ticket in tickets]
 
