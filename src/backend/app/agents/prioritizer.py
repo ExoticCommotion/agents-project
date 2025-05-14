@@ -2,7 +2,7 @@
 Prioritizer Agent for the AI Project Manager.
 
 This module defines the Prioritizer Agent, which is responsible for prioritizing
-tickets based on their importance and dependencies.
+tasks based on dependencies, complexity, and importance.
 """
 
 from backend.app.core.data_models import DevinTicket
@@ -15,10 +15,10 @@ logger = get_logger(__name__)
 
 class PrioritizerAgent:
     """
-    Agent responsible for prioritizing tickets.
+    Agent responsible for prioritizing tasks.
 
-    The Prioritizer Agent takes a list of tickets and prioritizes them based on their
-    importance and dependencies.
+    The Prioritizer Agent takes a list of tasks and prioritizes them based on
+    dependencies, complexity, and importance.
     """
 
     def __init__(self) -> None:
@@ -36,6 +36,4 @@ class PrioritizerAgent:
             A prioritized list of tickets
         """
         logger.info(f"Prioritizing {len(tickets)} tickets")
-
-        # Simple prioritization based on the priority field
         return sorted(tickets, key=lambda ticket: ticket.priority)

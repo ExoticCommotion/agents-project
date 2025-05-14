@@ -5,13 +5,13 @@ This module defines the Pipeline Orchestrator, which is responsible for orchestr
 the flow of data between the different agents in the AI Project Manager.
 """
 
+from backend.app.agents.execution_coordinator import ExecutionCoordinatorAgent
+from backend.app.agents.feedback_analyzer import FeedbackAnalyzerAgent
+from backend.app.agents.feedback_synthesizer import FeedbackSynthesizerAgent
+from backend.app.agents.planner import PlannerAgent
+from backend.app.agents.prioritizer import PrioritizerAgent
+from backend.app.agents.task_definer import TaskDefinerAgent
 from backend.app.core.data_models import HighLevelGoal, LearningProposal
-from backend.app.custom_agents.aipm_agents.execution_coordinator import ExecutionCoordinatorAgent
-from backend.app.custom_agents.aipm_agents.feedback_analyzer import FeedbackAnalyzerAgent
-from backend.app.custom_agents.aipm_agents.feedback_synthesizer import FeedbackSynthesizerAgent
-from backend.app.custom_agents.aipm_agents.planner import PlannerAgent
-from backend.app.custom_agents.aipm_agents.prioritizer import PrioritizerAgent
-from backend.app.custom_agents.aipm_agents.task_definer import TaskDefinerAgent
 from backend.app.tools.devin_session_manager import DevinSessionManager
 from backend.app.utils.logger import get_logger
 

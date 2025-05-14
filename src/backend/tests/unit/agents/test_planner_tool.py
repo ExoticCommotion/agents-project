@@ -2,8 +2,8 @@
 Unit tests for the Planner Tool Agent.
 """
 
+from backend.app.agents.planner_tool import PlannerTool
 from backend.app.core.data_models import HighLevelGoal, StructuredPlan
-from backend.app.custom_agents.aipm_agents.planner_tool import PlannerTool
 
 
 def test_planner_tool_exists() -> None:

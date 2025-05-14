@@ -1,29 +1,29 @@
 """
-Planner Tool Agent for the AI Project Manager.
+Planner Agent for the AI Project Manager.
 
-This module defines the Planner Tool Agent, which is responsible for providing
-planning functionality as a tool.
+This module defines the Planner Agent, which is responsible for creating structured plans
+from high-level goals.
 """
 
 from backend.app.core.data_models import HighLevelGoal, StructuredPlan
 from backend.app.utils.logger import get_logger
 
-__all__ = ["PlannerTool", "StructuredPlan"]
+__all__ = ["PlannerAgent"]
 
 logger = get_logger(__name__)
 
 
-class PlannerTool:
+class PlannerAgent:
     """
-    Tool agent responsible for creating structured plans from high-level goals.
+    Agent responsible for creating structured plans from high-level goals.
 
-    The Planner Tool provides planning functionality that can be used by other agents
-    in the AI Project Manager system.
+    The Planner Agent takes a high-level goal and breaks it down into a structured plan
+    with clear steps, complexity estimates, and time estimates.
     """
 
     def __init__(self) -> None:
-        """Initialize the Planner Tool."""
-        logger.info("Initializing Planner Tool")
+        """Initialize the Planner Agent."""
+        logger.info("Initializing Planner Agent")
 
     def create_plan(self, goal: HighLevelGoal) -> StructuredPlan:
         """
